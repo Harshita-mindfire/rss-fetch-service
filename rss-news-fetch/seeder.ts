@@ -5,8 +5,8 @@ import AgencyModel from "./model/Agency";
 import agencyData from "./data/Agency";
 import AgencyFeedData from "./data/AgencyFeed";
 import AgencyFeedModel from "./model/AgencyFeed";
-import { fetchRSSFeed } from "./utils/rss-feed";
-import NewsFeed from "./model/NewsFeed";
+import { fetchRSSFeedAndUpdateDB } from "./utils/rss-feed";
+import SyncStatus from "./model/SyncStatus";
 
 type Category = {
     _id: Types.ObjectId,
@@ -27,6 +27,9 @@ const seedCategoriesAndAgencyData = async () => {
     try {
         // Connect to MongoDB
         await mongoose.connect("mongodb://localhost/newsforyou");
+
+        await SyncStatus.deleteMany({})
+        await SyncStatus.collection.insertOne({ lastSync: new Date(0) })
 
         // Delete existing categories
         await CategoryModel.deleteMany({});
@@ -66,10 +69,9 @@ const seedAgencyFeedandNewsFeedData = async (agencyFeedSeedData: AgencyFeed[]) =
         const insertedData = await AgencyFeedModel.insertMany(agencyFeedSeedData);
         console.log("Agencies Feed seeded successfully");
         if (insertedData.length > 0) {
-            const newsFeedData = await fetchRSSFeed();
-            if (newsFeedData && newsFeedData?.length > 0) {
-                await NewsFeed.insertMany(newsFeedData);
-                console.log("News Feed seeded successfully");
+            const insertedNewsFeed = await fetchRSSFeedAndUpdateDB();
+            if (insertedNewsFeed && insertedNewsFeed.length > 0) {
+                console.log("News Feed seeded successfully", insertedNewsFeed.length);
             }
         }
 
