@@ -26,7 +26,7 @@ type AgencyFeed = {
 const seedCategoriesAndAgencyData = async () => {
     try {
         // Connect to MongoDB
-        await mongoose.connect("mongodb://localhost/newsforyou");
+        await mongoose.connect("mongodb://mongo-db:27017/newsforyou");
 
         await SyncStatus.deleteMany({})
         await SyncStatus.collection.insertOne({ lastSync: new Date(0) })
@@ -61,7 +61,7 @@ const seedCategoriesAndAgencyData = async () => {
 const seedAgencyFeedandNewsFeedData = async (agencyFeedSeedData: AgencyFeed[]) => {
     try {
         // Connect to MongoDB
-        await mongoose.connect("mongodb://localhost/newsforyou");
+        await mongoose.connect("mongodb://mongo-db:27017/newsforyou");
 
         // Delete existing agencyFeed
         await AgencyFeedModel.deleteMany({});
