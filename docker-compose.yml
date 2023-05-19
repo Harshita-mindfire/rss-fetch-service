@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  mongo-db:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data:/data/db
+
+  rss-news-fetch:
+    build: ./rss-news-fetch
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo-db
