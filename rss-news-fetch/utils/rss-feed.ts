@@ -1,9 +1,9 @@
-import Agency from "../model/Agency";
-import AgencyFeed from "../model/AgencyFeed";
 import Parser from "rss-parser";
 import { Agencies } from "./constants";
 import NewsFeed from "../model/NewsFeed";
 import SyncStatus from "../model/SyncStatus";
+import Agency from "../model/Agency";
+import AgencyFeed from "../model/AgencyFeed";
 
 enum EnclosureTags {
   MEDIA = "media:content",

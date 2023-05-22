@@ -8,10 +8,10 @@ import { Channel } from "amqplib";
 
 dotenv.config({ path: ".env" });
 
-//Connection to db
+// Connection to the database
 mongooseDb();
 
-//connection to RabbitMQ
+// Connection to RabbitMQ
 let channel: Channel;
 
 RabbitMQConnect().then((data) => {
@@ -21,7 +21,6 @@ RabbitMQConnect().then((data) => {
 });
 
 const app = express();
-
 const PORT = process.env.PORT || 5000;
 
 // Schedule the cron job to run every hour
@@ -37,7 +36,7 @@ try {
         msg: `${updatedEntries} items are updated in DB`,
         updatedEntries,
       };
-      console.log(`Sending message to ${QUEUE_NAME}.`);
+      console.log(`Sending message to ${QUEUE_NAME}`);
       channel.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(data)));
     }
   });
@@ -45,13 +44,13 @@ try {
   console.error("Error while fetching and storing RSS feeds:", error);
 }
 
-const server = app.listen(PORT, () =>
-  console.log(`Server is running in port ${PORT}`)
-);
+const server = app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
-// Handler for unhandled proise rejection
+// Handler for unhandled promise rejections
 process.on("unhandledRejection", (err: any) => {
-  console.log(`Err: ${err.message}`);
-  //close server and exit process
+  console.log(`Error: ${err.message}`);
+  // Close server and exit process
   server.close(() => process.exit(1));
 });
