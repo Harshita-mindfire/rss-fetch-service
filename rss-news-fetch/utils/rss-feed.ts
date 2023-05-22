@@ -38,7 +38,7 @@ export const fetchRSSFeedAndUpdateDB = async () => {
             (item) =>
               item.pubDate && new Date(item.pubDate) > lastCronSync[0].lastSync
           )
-          .map((item: any) => ({
+          .map((item) => ({
             title: item.title,
             description: item.contentSnippet,
             publishedAt: item.pubDate,
