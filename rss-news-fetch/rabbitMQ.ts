@@ -14,7 +14,7 @@ async function connect() {
     const connection = await amqp.connect(amqpServer);
     const channel = await connection.createChannel();
     const data = await channel.assertQueue(QUEUE_NAME);
-    console.log(`Connected to RabbitMQ and create ${data.queue} queue.`);
+    console.log(`Connected to RabbitMQ and created ${data.queue} queue.`);
     return channel;
   } catch (err: unknown) {
     console.log("err while connecting to RabbitMQ.", err);

@@ -42,11 +42,11 @@ try {
     }
   });
 } catch (error) {
-  console.error("Error fetching and storing RSS feeds:", error);
+  console.error("Error while fetching and storing RSS feeds:", error);
 }
 
 const server = app.listen(PORT, () =>
-  console.log(`Hi server is running in port ${PORT}`)
+  console.log(`Server is running in port ${PORT}`)
 );
 
 // Handler for unhandled proise rejection
