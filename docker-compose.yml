@@ -29,3 +29,5 @@ services:
       - rabbitmq
     networks:
       - news_for_you
+    #run app and seed data in db. Also keep the container running
+    command: sh -c "npm run start & npm run seed && tail -f /dev/null"
