@@ -1,9 +1,24 @@
-version: "3.8"
+networks:
+  news_for_you:
+
 services:
   mongo-db:
     image: mongo
     ports:
       - "27017:27017"
+    networks:
+      - news_for_you
+
+  rabbitmq:
+    image: rabbitmq:latest
+    container_name: rabbitmq
+    ports:
+      # AMQP protocol port
+      - "5672:5672"
+      # HTTP management UI
+      - "15672:15672"
+    networks:
+      - news_for_you
 
   rss-news-fetch:
     build: ./rss-news-fetch
@@ -11,3 +26,6 @@ services:
       - "5000:5000"
     depends_on:
       - mongo-db
+      - rabbitmq
+    networks:
+      - news_for_you
