@@ -4,6 +4,7 @@ import NewsFeed from "../model/NewsFeed";
 import SyncStatus from "../model/SyncStatus";
 import Agency from "../model/Agency";
 import AgencyFeed from "../model/AgencyFeed";
+import logger from "../logger";
 
 enum EnclosureTags {
   MEDIA = "media:content",
@@ -61,6 +62,6 @@ export const fetchRSSFeedAndUpdateDB = async () => {
     }
     return insertedNewsFeed;
   } catch (error) {
-    console.error("Error fetching RSS feeds:", error);
+    logger.error("Error fetching RSS feeds:", error);
   }
 };

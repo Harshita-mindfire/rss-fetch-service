@@ -1,4 +1,5 @@
 import mongoose, { Types } from "mongoose";
+import dotenv from "dotenv";
 import CategoryModel from "./model/Category";
 import categoryData from "./data/Category";
 import AgencyModel from "./model/Agency";
@@ -7,7 +8,7 @@ import AgencyFeedData from "./data/AgencyFeed";
 import AgencyFeedModel from "./model/AgencyFeed";
 import { fetchRSSFeedAndUpdateDB } from "./utils/rss-feed";
 import SyncStatus from "./model/SyncStatus";
-import dotenv from "dotenv";
+import logger from "./logger";
 
 dotenv.config({ path: ".env" });
 
@@ -41,12 +42,12 @@ const seedCategoriesAndAgencyData = async () => {
     // Delete existing categories
     await CategoryModel.deleteMany({});
     const insertedCategories = await CategoryModel.insertMany(categoryData);
-    console.log("Categories seeded successfully");
+    logger.info("Categories seeded successfully");
 
     // Delete existing agency
     await AgencyModel.deleteMany({});
     const insertedAgencies = await AgencyModel.insertMany(agencyData);
-    console.log("Agencies seeded successfully");
+    logger.info("Agencies seeded successfully");
 
     const categories: Category[] = insertedCategories.map((category) => ({
       _id: category._id,
@@ -58,7 +59,7 @@ const seedCategoriesAndAgencyData = async () => {
     }));
     return { categories, agencies };
   } catch (error) {
-    console.error("Error seeding categories:", error);
+    logger.error("Error seeding categories:", error);
   } finally {
     // Disconnect from MongoDB
     await mongoose.disconnect();
@@ -80,15 +81,15 @@ const seedAgencyFeedandNewsFeedData = async (
     await AgencyFeedModel.deleteMany({});
 
     const insertedData = await AgencyFeedModel.insertMany(agencyFeedSeedData);
-    console.log("Agencies Feed seeded successfully");
+    logger.info("Agencies Feed seeded successfully");
     if (insertedData.length > 0) {
       const insertedNewsFeed = await fetchRSSFeedAndUpdateDB();
       if (insertedNewsFeed && insertedNewsFeed.length > 0) {
-        console.log("News Feed seeded successfully", insertedNewsFeed.length);
+        logger.info("News Feed seeded successfully", insertedNewsFeed.length);
       }
     }
   } catch (error) {
-    console.error("Error seeding categories:", error);
+    logger.error("Error seeding categories:", error);
   } finally {
     // Disconnect from MongoDB
     await mongoose.disconnect();

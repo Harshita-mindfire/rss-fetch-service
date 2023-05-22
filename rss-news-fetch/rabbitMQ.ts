@@ -1,4 +1,5 @@
 import amqp from "amqplib";
+import logger from "./logger";
 
 export const QUEUE_NAME = "NEWS";
 
@@ -15,18 +16,18 @@ async function connect() {
     const connection = await amqp.connect(amqpServer);
     const channel = await connection.createChannel();
     const { queue } = await channel.assertQueue(QUEUE_NAME);
-    console.log(`Connected to RabbitMQ and created ${queue} queue.`);
+    logger.info(`Connected to RabbitMQ and created ${queue} queue.`);
     return channel;
   } catch (error) {
-    console.log("Error while connecting to RabbitMQ:", error);
+    logger.error("Error while connecting to RabbitMQ:", error);
     if (connectionAttempts < maxRetries) {
-      console.log(
+      logger.info(
         `Retrying connection to RabbitMQ in ${retryInterval / 1000} seconds...`
       );
       connectionAttempts++;
       setTimeout(connect, retryInterval);
     } else {
-      console.error(
+      logger.error(
         "Error: Maximum connection retries reached to connect to RabbitMQ"
       );
     }

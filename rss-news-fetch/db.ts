@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import logger from "./logger";
 
 const dbConnect = async () => {
   try {
@@ -7,9 +8,9 @@ const dbConnect = async () => {
       throw new Error("Mongo Uri is not set.");
     }
     const conn = await mongoose.connect(uri);
-    console.log(`Connected to mongo db ${conn.connection.host}`);
+    logger.info(`Connected to mongo db ${conn.connection.host}`);
   } catch (err: unknown) {
-    console.log("Error connection with DB.", err);
+    logger.error("Error connection with DB.", err);
   }
 };
 

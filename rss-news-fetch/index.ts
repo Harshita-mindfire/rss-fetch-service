@@ -1,10 +1,11 @@
 import express from "express";
 import cron from "node-cron";
+import { Channel } from "amqplib";
+import dotenv from "dotenv";
 import mongooseDb from "./db";
 import { fetchRSSFeedAndUpdateDB } from "./utils/rss-feed";
-import dotenv from "dotenv";
 import RabbitMQConnect, { QUEUE_NAME } from "./rabbitMQ";
-import { Channel } from "amqplib";
+import logger from "./logger";
 
 dotenv.config({ path: ".env" });
 
@@ -28,7 +29,7 @@ try {
   cron.schedule("0 * * * *", async () => {
     const results = await fetchRSSFeedAndUpdateDB();
     const updatedEntries = results?.length;
-    console.log(
+    logger.info(
       `Cron Job completed successfully at ${new Date().toISOString()} and added ${updatedEntries} items`
     );
     if (updatedEntries && updatedEntries > 0) {
@@ -36,21 +37,21 @@ try {
         msg: `${updatedEntries} items are updated in DB`,
         updatedEntries,
       };
-      console.log(`Sending message to ${QUEUE_NAME}`);
+      logger.info(`Sending message to ${QUEUE_NAME}`);
       channel.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(data)));
     }
   });
 } catch (error) {
-  console.error("Error while fetching and storing RSS feeds:", error);
+  logger.error("Error while fetching and storing RSS feeds:", error);
 }
 
 const server = app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  logger.info(`Server is running on port ${PORT}`);
 });
 
 // Handler for unhandled promise rejections
 process.on("unhandledRejection", (err: unknown) => {
-  console.log(`Error: ${err}`);
+  logger.error(`Error: ${err}`);
   // Close server and exit process
   server.close(() => process.exit(1));
 });
