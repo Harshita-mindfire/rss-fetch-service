@@ -1,14 +1,12 @@
 import mongoose, { Types } from "mongoose";
+import Schemas from "schemas-npm-package";
 import dotenv from "dotenv";
-import CategoryModel from "./model/Category";
 import categoryData from "./data/Category";
-import AgencyModel from "./model/Agency";
 import agencyData from "./data/Agency";
 import AgencyFeedData from "./data/AgencyFeed";
-import AgencyFeedModel from "./model/AgencyFeed";
 import { fetchRSSFeedAndUpdateDB } from "./utils/rss-feed";
-import SyncStatus from "./model/SyncStatus";
 import logger from "./logger";
+import SyncStatus from "./model/SyncStatus";
 
 dotenv.config({ path: ".env" });
 
@@ -31,7 +29,7 @@ const seedCategoriesAndAgencyData = async () => {
   try {
     const uri = process.env.MONGO_URI;
     if (!uri) {
-      throw new Error("MOngo URI is undefined.");
+      throw new Error("Mongo URI is undefined.");
     }
     // Connect to MongoDB
     await mongoose.connect(uri);
@@ -40,20 +38,20 @@ const seedCategoriesAndAgencyData = async () => {
     await SyncStatus.collection.insertOne({ lastSync: new Date(0) });
 
     // Delete existing categories
-    await CategoryModel.deleteMany({});
-    const insertedCategories = await CategoryModel.insertMany(categoryData);
+    await Schemas.Category.deleteMany({});
+    const insertedCategories = await Schemas.Category.insertMany(categoryData);
     logger.info("Categories seeded successfully");
 
     // Delete existing agency
-    await AgencyModel.deleteMany({});
-    const insertedAgencies = await AgencyModel.insertMany(agencyData);
+    await Schemas.Agency.deleteMany({});
+    const insertedAgencies = await Schemas.Agency.insertMany(agencyData);
     logger.info("Agencies seeded successfully");
 
-    const categories: Category[] = insertedCategories.map((category) => ({
+    const categories: Category[] = insertedCategories.map((category: any) => ({
       _id: category._id,
       title: category.title,
     }));
-    const agencies: Agency[] = insertedAgencies.map((agency) => ({
+    const agencies: Agency[] = insertedAgencies.map((agency: any) => ({
       _id: agency._id,
       name: agency.name,
     }));
@@ -78,9 +76,11 @@ const seedAgencyFeedandNewsFeedData = async (
     await mongoose.connect(uri);
 
     // Delete existing agencyFeed
-    await AgencyFeedModel.deleteMany({});
+    await Schemas.AgencyFeed.deleteMany({});
 
-    const insertedData = await AgencyFeedModel.insertMany(agencyFeedSeedData);
+    const insertedData = await Schemas.AgencyFeed.insertMany(
+      agencyFeedSeedData
+    );
     logger.info("Agencies Feed seeded successfully");
     if (insertedData.length > 0) {
       const insertedNewsFeed = await fetchRSSFeedAndUpdateDB();

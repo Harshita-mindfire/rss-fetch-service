@@ -1,9 +1,8 @@
 import Parser from "rss-parser";
+import Schemas from "schemas-npm-package";
 import { Agencies } from "./constants";
-import NewsFeed from "../model/NewsFeed";
 import SyncStatus from "../model/SyncStatus";
-import Agency from "../model/Agency";
-import AgencyFeed from "../model/AgencyFeed";
+
 import logger from "../logger";
 
 enum EnclosureTags {
@@ -29,10 +28,13 @@ export const fetchRSSFeedAndUpdateDB = async () => {
      */
     const syncStart = new Date().toISOString();
     const lastCronSync = await SyncStatus.find();
-    const toiAgencyId = await Agency.find({ name: Agencies.TOI }, { _id: 1 });
-    const feedUrlInfo = await AgencyFeed.find();
+    const toiAgencyId = await Schemas.Agency.find(
+      { name: Agencies.TOI },
+      { _id: 1 }
+    );
+    const feedUrlInfo = await Schemas.AgencyFeed.find();
     const results = await Promise.all(
-      feedUrlInfo.map(async (agencyData) => {
+      feedUrlInfo.map(async (agencyData: any) => {
         const feed = await parser.parseURL(agencyData.feedUrl);
         return feed.items
           .filter(
@@ -54,7 +56,7 @@ export const fetchRSSFeedAndUpdateDB = async () => {
       })
     );
     const newsFeed = results.flat();
-    const insertedNewsFeed = await NewsFeed.insertMany(newsFeed);
+    const insertedNewsFeed = await Schemas.NewsFeed.insertMany(newsFeed);
     if (insertedNewsFeed) {
       await SyncStatus.findByIdAndUpdate(lastCronSync[0]._id, {
         lastSync: syncStart,
