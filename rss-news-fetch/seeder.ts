@@ -85,7 +85,7 @@ const seedAgencyFeedandNewsFeedData = async (
     if (insertedData.length > 0) {
       const insertedNewsFeed = await fetchRSSFeedAndUpdateDB();
       if (insertedNewsFeed && insertedNewsFeed.length > 0) {
-        logger.info("News Feed seeded successfully", insertedNewsFeed.length);
+        logger.info("News Feed seeded successfully");
       }
     }
   } catch (error) {

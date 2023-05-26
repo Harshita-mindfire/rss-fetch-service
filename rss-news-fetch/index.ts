@@ -6,6 +6,7 @@ import mongooseDb from "./db";
 import { fetchRSSFeedAndUpdateDB } from "./utils/rss-feed";
 import RabbitMQConnect, { QUEUE_NAME } from "./rabbitMQ";
 import logger from "./logger";
+import { Types } from "mongoose";
 
 dotenv.config({ path: ".env" });
 
@@ -28,14 +29,19 @@ const PORT = process.env.PORT || 5000;
 try {
   cron.schedule("0 * * * *", async () => {
     const results = await fetchRSSFeedAndUpdateDB();
-    const updatedEntries = results?.length;
+    const count = results?.length;
     logger.info(
-      `Cron Job completed successfully at ${new Date().toISOString()} and added ${updatedEntries} items`
+      `Cron Job completed successfully at ${new Date().toISOString()} and added ${count} items`
     );
-    if (updatedEntries && updatedEntries > 0) {
+    if (count && count > 0) {
+      const updatedEntriesId = results.map(
+        ({ _id }: { _id: Types.ObjectId }) => _id
+      );
+
       const data = {
-        msg: `${updatedEntries} items are updated in DB`,
-        updatedEntries,
+        msg: `${count} items are updated in DB`,
+        updatedEntriesId,
+        count,
       };
       logger.info(`Sending message to ${QUEUE_NAME}`);
       channel.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(data)));
