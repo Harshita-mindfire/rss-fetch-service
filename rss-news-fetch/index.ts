@@ -23,7 +23,7 @@ RabbitMQConnect().then((data) => {
 });
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5002;
 
 // Schedule the cron job to run every hour
 try {
