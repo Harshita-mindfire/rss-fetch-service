@@ -30,10 +30,10 @@ try {
   cron.schedule("0 * * * *", async () => {
     const results = await fetchRSSFeedAndUpdateDB();
     const count = results?.length;
-    logger.info(
-      `Cron Job completed successfully at ${new Date().toISOString()} and added ${count} items`
-    );
     if (count && count > 0) {
+      logger.info(
+        `Cron Job completed successfully at ${new Date().toISOString()} and added ${count} items`
+      );
       const updatedEntriesId = results.map(
         ({ _id }: { _id: Types.ObjectId }) => _id
       );
